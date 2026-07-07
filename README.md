@@ -1,6 +1,9 @@
 # HireFlow AI
 ## An AI-powered candidate screening platform that reduces bias while automating the recruiting workflow
 
+**🔗 Live Demo:** [hireflow-ai-kappa.vercel.app](https://hireflow-ai-kappa.vercel.app/)
+**🔗 Repository:** [github.com/cess-m/hireflow-ai](https://github.com/cess-m/hireflow-ai)
+
 ---
 
 ## About The Project
@@ -118,18 +121,15 @@ Under the hood, a recruiter uploads a resume, the system parses the PDF server-s
 6. **Shortlist a strong match** — this triggers an n8n automation that appends the candidate's details to your connected Google Sheet.
 7. **Check the automation log** to see the history of every shortlist sync, including any failures.
 
-> Screenshots/demo GIF coming soon as the UI is finalized.
+> Try it live: [hireflow-ai-kappa.vercel.app](https://hireflow-ai-kappa.vercel.app/)
 
 ---
 
 ## Roadmap
 
-- [ ] Complete the notification system
-- [ ] Finish the job detail / applicant list view
 - [ ] Add search and filter for candidates
 - [ ] Support bulk resume upload / batch screening
 - [ ] Add support for scanned/image-based PDFs (OCR)
-- [ ] Deploy a live demo instance
 
 See the [open issues](https://github.com/cess-m/hireflow-ai/issues) for a full list of proposed features and known issues.
 
@@ -141,12 +141,6 @@ This is currently a personal portfolio project, so it isn't set up for external 
 
 1. Open an issue describing the bug or idea
 2. If you'd like to submit a fix, fork the repo, create a feature branch (`git checkout -b fix/your-fix-name`), commit your changes, and open a pull request
-
----
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
