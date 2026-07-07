@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase-server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import AutomationPanel from './AutomationPanel'
+import ScoreRing from '@/components/ScoreRing'
+import EmailDraftCard from '@/components/EmailDraftCard'
 
 export default async function ResultsPage({
   params,
@@ -11,6 +13,7 @@ export default async function ResultsPage({
   const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const sheetUrl = (user?.user_metadata?.google_sheet_url as string | undefined) ?? null
 
   const { data: candidate } = await supabase
     .from('candidates')
@@ -27,15 +30,8 @@ export default async function ResultsPage({
   const evidenceSnippets: string[] = candidate.evidence_snippets ?? []
   const interviewQuestions: string[] = candidate.interview_questions ?? []
 
-  const scoreColor =
-    (candidate.match_score ?? 0) >= 70
-      ? 'text-emerald-700'
-      : (candidate.match_score ?? 0) >= 50
-      ? 'text-amber-700'
-      : 'text-red-700'
-
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="flex items-center gap-2 text-sm text-slate-500 mb-6">
         <Link href="/dashboard" className="hover:text-slate-950 transition">Dashboard</Link>
         <span>/</span>
@@ -45,27 +41,22 @@ export default async function ResultsPage({
             <span>/</span>
           </>
         ) : null}
-        <span className="text-slate-950 font-medium">{candidate.candidate_name}</span>
+        <span className="text-slate-950 font-medium truncate min-w-0">{candidate.candidate_name}</span>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 space-y-5">
-          <div className="bg-white border border-slate-200 rounded-lg p-6 flex items-center gap-8 shadow-sm">
-            <div className="text-center min-w-36">
-              <p className={`text-5xl font-semibold ${scoreColor}`}>
-                {candidate.match_score ?? '-'}{candidate.match_score != null ? '%' : ''}
-              </p>
-              <p className="text-xs text-slate-500 mt-1">Match Score</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-5">
+          <div className="bg-gradient-to-br from-blue-50 via-white to-white border border-slate-200 rounded-xl shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
+            <div className="shrink-0">
+              <ScoreRing score={candidate.match_score ?? 0} size={112} />
             </div>
-            <div className="border-l border-slate-200 pl-8">
-              <p className="text-lg font-semibold text-slate-950">{candidate.candidate_name}</p>
+            <div className="sm:border-l sm:border-blue-100 sm:pl-6 text-center sm:text-left" translate="no">
+              <p className="text-xl font-bold text-slate-950 leading-tight">{candidate.candidate_name}</p>
               {candidate.candidate_email && (
-                <p className="text-sm text-slate-500">{candidate.candidate_email}</p>
+                <p className="text-sm text-slate-500 mt-1">{candidate.candidate_email}</p>
               )}
-              <p className="text-sm text-slate-500 mt-1">
-                Role: <span className="text-slate-700">{screening?.job_title ?? '-'}</span>
-              </p>
-              <div className="mt-2">
+              <p className="text-sm text-slate-500 mt-0.5">{screening?.job_title ?? 'No role'}</p>
+              <div className="mt-3">
                 <RecommendationBadge value={candidate.recommendation} />
               </div>
             </div>
@@ -115,11 +106,11 @@ export default async function ResultsPage({
           )}
 
           {candidate.email_draft && (
-            <Section title="Recruiter Email Draft">
-              <pre className="text-sm text-slate-700 whitespace-pre-wrap font-sans leading-relaxed bg-slate-50 border border-slate-200 rounded-md p-4">
-                {candidate.email_draft}
-              </pre>
-            </Section>
+            <EmailDraftCard
+              emailDraft={candidate.email_draft}
+              candidateEmail={candidate.candidate_email}
+              jobTitle={screening?.job_title ?? null}
+            />
           )}
         </div>
 
@@ -127,6 +118,7 @@ export default async function ResultsPage({
           <AutomationPanel
             candidateId={candidate.id}
             candidateStatus={candidate.status ?? 'pending'}
+            sheetUrl={sheetUrl}
           />
 
           <div className="bg-white border border-slate-200 rounded-lg p-5 text-xs text-slate-500 leading-relaxed shadow-sm">
@@ -141,7 +133,7 @@ export default async function ResultsPage({
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-slate-950 mb-3">{title}</h3>
       {children}
     </div>
@@ -165,7 +157,7 @@ function SkillCard({
       : 'bg-red-50 text-red-700 border-red-200'
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-slate-950 mb-3">{title}</h3>
       {skills.length > 0 ? (
         <div className="flex flex-wrap gap-2">

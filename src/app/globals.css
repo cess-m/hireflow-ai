@@ -8,18 +8,29 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "SFMono-Regular", Consolas, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.hf-gradient {
+  background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 30%, #fce7f3 65%, #dbeafe 100%);
 }
 
 @layer components {
   .field-input {
-    @apply w-full bg-white border border-slate-300 rounded-md px-3 py-2 text-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400;
+    @apply w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 placeholder:text-slate-400 transition-colors duration-200;
   }
+}
+
+.email-draft-body a,
+.stats-bar-text a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;
 }

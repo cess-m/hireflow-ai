@@ -108,7 +108,7 @@ export default function AddApplicantForm({ job }: { job: Job }) {
     <>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-slate-950 mb-4">Candidate</h2>
             <div className="space-y-3">
               <Field label="Full name *">
@@ -132,7 +132,7 @@ export default function AddApplicantForm({ job }: { job: Job }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold text-slate-950">Resume *</h2>
               <label className={`text-xs border px-2 py-1 rounded transition ${
@@ -169,7 +169,7 @@ export default function AddApplicantForm({ job }: { job: Job }) {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-950 mb-3">Screening Against</h2>
           <p className="font-medium text-slate-950">{job.job_title}</p>
           <p className="text-sm text-slate-600 whitespace-pre-wrap leading-relaxed mt-4">{job.job_description}</p>
@@ -182,7 +182,7 @@ export default function AddApplicantForm({ job }: { job: Job }) {
         <button
           onClick={handleRun}
           disabled={!canRun || loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Running AI Screening...' : 'Run AI Screening'}
         </button>

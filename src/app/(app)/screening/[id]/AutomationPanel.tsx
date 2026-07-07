@@ -5,9 +5,10 @@ import { useState } from 'react'
 interface Props {
   candidateId: string
   candidateStatus: string
+  sheetUrl: string | null
 }
 
-export default function AutomationPanel({ candidateId, candidateStatus }: Props) {
+export default function AutomationPanel({ candidateId, candidateStatus, sheetUrl }: Props) {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(candidateStatus === 'shortlisted')
   const [error, setError] = useState('')
@@ -21,7 +22,10 @@ export default function AutomationPanel({ candidateId, candidateStatus }: Props)
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ candidate_id: candidateId }),
       })
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({ error: 'Something went wrong' }))
+        throw new Error(body.error ?? 'Something went wrong')
+      }
       setSent(true)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to send')
@@ -31,7 +35,7 @@ export default function AutomationPanel({ candidateId, candidateStatus }: Props)
   }
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-slate-950 mb-3">Automation</h3>
       {sent ? (
         <div className="space-y-3">
@@ -41,14 +45,16 @@ export default function AutomationPanel({ candidateId, candidateStatus }: Props)
             </span>
             <span className="text-xs text-slate-500">Sent to Google Sheets</span>
           </div>
-          <a
-            href={process.env.NEXT_PUBLIC_SHEET_URL ?? '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-          >
-            View Sheet
-          </a>
+          {sheetUrl && (
+            <a
+              href={sheetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View Sheet
+            </a>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
@@ -58,11 +64,23 @@ export default function AutomationPanel({ candidateId, candidateStatus }: Props)
           <button
             onClick={handleSend}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-md transition disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 rounded-lg transition disabled:opacity-50"
           >
             {loading ? 'Sending...' : 'Send to n8n'}
           </button>
-          {error && <p className="text-xs text-red-600">{error}</p>}
+          {error && (
+            <div className="rounded-lg bg-red-50 border border-red-100 px-3 py-2.5">
+              <p className="text-xs text-red-700">{error}</p>
+              {(error.includes('Settings') || error.includes('connected') || error.includes('configured')) && (
+                <a
+                  href="/settings"
+                  className="text-xs text-red-700 font-medium underline underline-offset-2 mt-1 inline-block hover:text-red-800"
+                >
+                  Go to Settings →
+                </a>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

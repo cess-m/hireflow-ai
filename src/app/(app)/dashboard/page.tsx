@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import Link from 'next/link'
+import DeleteCandidateButton from '@/components/DeleteCandidateButton'
 
 type CandidateRow = {
   id: string
@@ -58,10 +59,10 @@ export default async function DashboardPage({
       : null
 
   const metrics = [
-    { label: 'Completed Screenings', value: candidates.length },
-    { label: 'Active Job Cards', value: jobs.length },
-    { label: 'Shortlisted', value: shortlisted },
-    { label: 'Avg Score', value: avgScore !== null ? `${avgScore}%` : '-' },
+    { label: 'Completed Screenings', value: candidates.length, accent: 'border-t-blue-500', iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+    { label: 'Active Job Cards', value: jobs.length, accent: 'border-t-slate-400', iconBg: 'bg-slate-100', iconColor: 'text-slate-600' },
+    { label: 'Shortlisted', value: shortlisted, accent: 'border-t-emerald-500', iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+    { label: 'Avg Score', value: avgScore !== null ? `${avgScore}%` : 'N/A', accent: 'border-t-amber-500', iconBg: 'bg-amber-50', iconColor: 'text-amber-600' },
   ]
 
   const tabs = [
@@ -71,7 +72,7 @@ export default async function DashboardPage({
   ]
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-semibold text-slate-950">Dashboard</h1>
@@ -79,14 +80,14 @@ export default async function DashboardPage({
         </div>
         <Link
           href="/jobs/new"
-          className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition"
+          className="text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 sm:px-5 sm:py-2 rounded-full transition-colors duration-200 cursor-pointer whitespace-nowrap"
         >
           Create Job
         </Link>
       </div>
 
-      <div className="border-b border-slate-200 mb-6">
-        <nav className="flex gap-6">
+      <div className="border-b border-slate-200 mb-6 overflow-x-auto">
+        <nav className="flex gap-6 whitespace-nowrap min-w-max">
           {tabs.map((tab) => (
             <Link
               key={tab.value}
@@ -123,7 +124,7 @@ function OverviewTab({
   candidates,
   totalAutomation,
 }: {
-  metrics: { label: string; value: string | number }[]
+  metrics: { label: string; value: string | number; accent: string }[]
   candidates: CandidateRow[]
   totalAutomation: number
 }) {
@@ -131,18 +132,18 @@ function OverviewTab({
     <div className="space-y-8">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((m) => (
-          <div key={m.label} className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
-            <p className="text-xs text-slate-500 mb-1">{m.label}</p>
-            <p className="text-2xl font-semibold text-slate-950">{m.value}</p>
+          <div key={m.label} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">{m.label}</p>
+            <p className="text-3xl font-bold text-slate-900">{m.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-4">
-        <div className="xl:col-span-3">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-3">
           <ApplicantsTable candidates={candidates} title="Recent Activity" emptyText="No screening activity yet." />
         </div>
-        <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
           <p className="text-xs text-slate-500 mb-1">Automation Runs</p>
           <p className="text-2xl font-semibold text-slate-950">{totalAutomation}</p>
           <p className="text-xs text-slate-500 mt-3">
@@ -180,7 +181,7 @@ function JobsTab({ jobs, candidates }: { jobs: JobRow[]; candidates: CandidateRo
           <Link
             key={job.id}
             href={`/jobs/${job.id}`}
-            className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm hover:border-blue-300 hover:shadow transition"
+            className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer"
           >
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -214,7 +215,7 @@ function ApplicantsTable({
   emptyText: string
 }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
       <div className="px-6 py-4 border-b border-slate-200">
         <h2 className="text-sm font-semibold text-slate-950">{title}</h2>
       </div>
@@ -223,44 +224,53 @@ function ApplicantsTable({
           <p className="text-slate-500 text-sm mb-3">{emptyText}</p>
           <Link
             href="/jobs/new"
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer"
           >
             Create a job card
           </Link>
         </div>
       ) : (
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50">
-            <tr className="text-xs text-slate-500 border-b border-slate-200">
-              <th className="px-6 py-3 text-left font-medium">Candidate</th>
-              <th className="px-6 py-3 text-left font-medium">Job Title</th>
-              <th className="px-6 py-3 text-left font-medium">Score</th>
-              <th className="px-6 py-3 text-left font-medium">Status</th>
-              <th className="px-6 py-3 text-left font-medium">Date</th>
-              <th className="px-6 py-3 text-left font-medium"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {candidates.map((c) => (
-              <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
-                <td className="px-6 py-3 text-slate-950 font-medium">{c.candidate_name}</td>
-                <td className="px-6 py-3 text-slate-600">{getJobTitle(c.screenings)}</td>
-                <td className="px-6 py-3">
-                  <Score value={c.match_score} />
-                </td>
-                <td className="px-6 py-3">
-                  <StatusBadge status={c.status ?? 'pending'} />
-                </td>
-                <td className="px-6 py-3 text-slate-500">{new Date(c.created_at).toLocaleDateString()}</td>
-                <td className="px-6 py-3">
-                  <Link href={`/screening/${c.id}`} className="text-blue-600 hover:text-blue-700 text-xs font-medium">
-                    View
-                  </Link>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50">
+              <tr className="text-xs text-slate-500 border-b border-slate-200">
+                <th className="px-3 md:px-6 py-3 text-left font-medium">Candidate</th>
+                <th className="px-3 md:px-6 py-3 text-left font-medium hidden sm:table-cell">Job Title</th>
+                <th className="px-3 md:px-6 py-3 text-left font-medium">Score</th>
+                <th className="px-3 md:px-6 py-3 text-left font-medium">Status</th>
+                <th className="px-3 md:px-6 py-3 text-left font-medium hidden md:table-cell">Date</th>
+                <th className="px-3 md:px-6 py-3 text-left font-medium"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {candidates.map((c) => (
+                <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50 transition">
+                  <td className="px-3 md:px-6 py-3 text-slate-950 font-medium">{c.candidate_name}</td>
+                  <td className="px-3 md:px-6 py-3 text-slate-600 hidden sm:table-cell">{getJobTitle(c.screenings)}</td>
+                  <td className="px-3 md:px-6 py-3">
+                    <Score value={c.match_score} />
+                  </td>
+                  <td className="px-3 md:px-6 py-3">
+                    <StatusBadge status={c.status ?? 'pending'} />
+                  </td>
+                  <td className="px-3 md:px-6 py-3 text-slate-500 hidden md:table-cell">{new Date(c.created_at).toLocaleDateString()}</td>
+                  <td className="px-3 md:px-6 py-3">
+                    <div className="flex items-center justify-end gap-3">
+                      <Link href={`/screening/${c.id}`} className="text-blue-600 hover:text-blue-700 text-xs font-medium cursor-pointer">
+                        View
+                      </Link>
+                      <DeleteCandidateButton
+                        candidateId={c.id}
+                        candidateName={c.candidate_name}
+                        isShortlisted={c.status === 'shortlisted'}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
@@ -322,10 +332,10 @@ function EmptyState({
   actionLabel: string
 }) {
   return (
-    <div className="bg-white border border-slate-200 rounded-lg px-6 py-16 text-center shadow-sm">
+    <div className="bg-white border border-slate-200 rounded-xl px-6 py-16 text-center shadow-sm">
       <p className="text-slate-950 font-medium">{title}</p>
       <p className="text-slate-500 text-sm mt-1 mb-4">{description}</p>
-      <Link href={actionHref} className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+      <Link href={actionHref} className="text-blue-600 hover:text-blue-700 text-sm font-medium cursor-pointer">
         {actionLabel}
       </Link>
     </div>

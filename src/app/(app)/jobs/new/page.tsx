@@ -42,7 +42,7 @@ export default function CreateJobPage() {
         <p className="text-sm text-slate-500 mt-1">Create a job card first, then add applicants under that role.</p>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-sm max-w-4xl">
+      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm max-w-4xl">
         <div className="space-y-4">
           <div>
             <label className="text-xs text-slate-600 block mb-1">Job title *</label>
@@ -74,7 +74,7 @@ export default function CreateJobPage() {
         <button
           onClick={handleCreate}
           disabled={!canCreate || loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Creating Job...' : 'Create Job'}
         </button>
